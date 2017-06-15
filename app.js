@@ -17,7 +17,8 @@ io.sockets.on('connection', function (socket) {
         var reponse = {
             pseudo: this.pseudo,
             date: getDate(),
-            message: message
+            message: message,
+            color: this.color
         };
 
         this.emit('reponse', reponse);
@@ -26,14 +27,15 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('inscription', function(pseudo) {
         socket.pseudo = pseudo;
-        messageConnectionPerso = 'bienvenue sur le chat ' + pseudo;
-        messageConnectionGeneral = pseudo + ' est entré sur le chat';
+        socket.color = getRandomColor();
+        messageConnectionPerso = getDate() + '--- bienvenue sur le chat <strong>' + pseudo + "</strong> ---";
+        messageConnectionGeneral = getDate() + '--- <strong>' + pseudo + '</strong> est entré sur le chat ---';
         this.emit('connection', messageConnectionPerso);
         this.broadcast.emit('connection', messageConnectionGeneral);
     });
 
     socket.on('quit', function() {
-        messageConnectionGeneral = this.pseudo + ' a quitté le chat';
+        messageConnectionGeneral = getDate() + '--- <strong>' + this.pseudo + '</strong> a quitté le chat ---';
         this.broadcast.emit('connection', messageConnectionGeneral);
     });
 });
@@ -57,6 +59,17 @@ function addZero(value){
     }
 
     return value;
+}
+
+function getRandomColor() {
+    var letters = '012345'.split('');
+    var color = '#';        
+    color += letters[Math.round(Math.random() * 5)];
+    letters = '0123456789ABCDEF'.split('');
+    for (var i = 0; i < 5; i++) {
+        color += letters[Math.round(Math.random() * 15)];
+    }
+    return color;
 }
 
 server.listen(8080);

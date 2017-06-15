@@ -26,11 +26,13 @@
             };
 
             socket.on('reponse', function(reponse) {
-                insertRowWithData(JSON.stringify(reponse));
+                var donneeInseree = '<span style="color: '+reponse.color+'">' + reponse.date + "<strong>" + reponse.pseudo + "</strong> : " + 
+                reponse.message + "</span>";        
+                insertRowWithData(donneeInseree);
             });
 
             socket.on('connection', function(message) {
-                insertRowWithData("--- "+message+" ---");
+                insertRowWithData(message);
             });
 
             document.addEventListener("keyup", function(event) {
