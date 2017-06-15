@@ -14,13 +14,27 @@ io.sockets.on('connection', function (socket) {
     console.log('Un client est connecté !');
 
     socket.on('message', function(message) {
-        reponse = this.pseudo + getDate() + " : "  + message;
+        var reponse = {
+            pseudo: this.pseudo,
+            date: getDate(),
+            message: message
+        };
+
         this.emit('reponse', reponse);
         this.broadcast.emit('reponse', reponse);
     });
 
     socket.on('inscription', function(pseudo) {
         socket.pseudo = pseudo;
+        messageConnectionPerso = 'bienvenue sur le chat ' + pseudo;
+        messageConnectionGeneral = pseudo + ' est entré sur le chat';
+        this.emit('connection', messageConnectionPerso);
+        this.broadcast.emit('connection', messageConnectionGeneral);
+    });
+
+    socket.on('quit', function() {
+        messageConnectionGeneral = this.pseudo + ' a quitté le chat';
+        this.broadcast.emit('connection', messageConnectionGeneral);
     });
 });
 

@@ -5,9 +5,9 @@
         <title>Chat</title>
     </head>
 
-    <body>
+    <body onload="focusOnInput()">
         <h1>Chat en temps réel</h1>
-        <input type="text" name="message"><button onclick="sendMessage()">Envoyer</button>
+        <input id="inputId" type="text" name="message"><input id="envoyer" type="submit" onclick="sendMessage()" value="Envoyer">
         <table id="conv">
         </table>
         
@@ -22,14 +22,38 @@
 
             function sendMessage() {
                 socket.emit('message', document.getElementsByName("message")[0].value);
+                document.getElementsByName("message")[0].value = "";
             };
 
             socket.on('reponse', function(reponse) {
+                insertRowWithData(JSON.stringify(reponse));
+            });
+
+            socket.on('connection', function(message) {
+                insertRowWithData("--- "+message+" ---");
+            });
+
+            document.addEventListener("keyup", function(event) {
+                event.preventDefault();
+                if (event.keyCode == 13) {
+                    document.getElementById("envoyer").click();
+                }
+            });
+
+            function focusOnInput(){
+                document.getElementById("inputId").focus();
+            }
+
+            function insertRowWithData(data){
                 var rows = table.getElementsByTagName("tr").lenght - 1; 
                 var row = table.insertRow(rows);
 
-                row.innerHTML = reponse;
-            });
+                row.innerHTML = data;
+            }
+
+            window.onbeforeunload = function() {
+                socket.emit('quit');
+            };
         </script>
     </body>
 </html>
